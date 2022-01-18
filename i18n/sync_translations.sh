@@ -12,6 +12,6 @@ if [ "${TRAVIS_EVENT_TYPE}" == "cron" ]
     git add ./msg
     git commit -m '[skip ci] Update translations from transifex'
     # add remote, make sure that API token doesn't end up in the log
-    git remote add origin-translation https://${GH_TOKEN}@github.com/LLK/happycode-blocks.git > /dev/null 2>&1
+    git remote add origin-translation https://${GH_TOKEN}@gitee.com/happycoding-cx/happycode-blocks.git > /dev/null 2>&1
     git push --set-upstream origin-translation develop
 fi

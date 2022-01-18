@@ -2,12 +2,12 @@
   "name": "happycode-blocks",
   "version": "0.1.0",
   "description": "Happycode Blocks is a library for building creative computing interfaces.",
-  "author": "Massachusetts Institute of Technology",
+  "author": "oldfritter",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/LLK/happycode-blocks#readme",
+  "homepage": "https://gitee.com/happycoding-cx/happycode-blocks#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/LLK/happycode-blocks.git"
+    "url": "https://gitee.com/happycoding-cx/happycode-blocks.git"
   },
   "main": "./dist/vertical.js",
   "browser": "./shim/vertical.js",
