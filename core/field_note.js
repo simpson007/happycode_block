@@ -2,7 +2,7 @@
  * @license
  * Visual Blocks Editor
  *
- * Copyright 2018 Massachusetts Institute of Technology
+ * Copyright 2018 Oldfritter
  * All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
