@@ -212,7 +212,7 @@ Blockly.HappycodeBlocks.VerticalExtensions.PROCEDURE_CALL_CONTEXTMENU = {
 };
 
 
-Blockly.HappycodeBlocks.VerticalExtensions.SCRATCH_EXTENSION = function() {
+Blockly.HappycodeBlocks.VerticalExtensions.HAPPYCODE_EXTENSION = function() {
   this.isHappycodeExtension = true;
 };
 /**
@@ -258,7 +258,7 @@ Blockly.HappycodeBlocks.VerticalExtensions.registerAll = function() {
 
   // Extension blocks have slightly different block rendering.
   Blockly.Extensions.register('happycode_extension',
-      Blockly.HappycodeBlocks.VerticalExtensions.SCRATCH_EXTENSION);
+      Blockly.HappycodeBlocks.VerticalExtensions.HAPPYCODE_EXTENSION);
 };
 
 Blockly.HappycodeBlocks.VerticalExtensions.registerAll();
