@@ -752,13 +752,14 @@ Blockly.Gesture.prototype.doBlockClick_ = function() {
     // If a field is being edited, don't fire any click events.
     var fieldEditing = Blockly.WidgetDiv.isVisible() || Blockly.DropDownDiv.isVisible();
     if (!fieldEditing) {
-      Blockly.Events.fire(
-          new Blockly.Events.Ui(this.startBlock_, 'click', undefined, undefined));
-      // Happycode-specific: also fire a "stack click" event for this stack.
-      // This is used to toggle the stack when any block in the stack is clicked.
-      var rootBlock = this.startBlock_.getRootBlock();
-      Blockly.Events.fire(
-          new Blockly.Events.Ui(rootBlock, 'stackclick', undefined, undefined));
+      alert('请添加事件,然后点击运行按钮');
+      // Blockly.Events.fire(
+      //     new Blockly.Events.Ui(this.startBlock_, 'click', undefined, undefined));
+      // // Happycode-specific: also fire a "stack click" event for this stack.
+      // // This is used to toggle the stack when any block in the stack is clicked.
+      // var rootBlock = this.startBlock_.getRootBlock();
+      // Blockly.Events.fire(
+      //     new Blockly.Events.Ui(rootBlock, 'stackclick', undefined, undefined));
     }
   }
   this.bringBlockToFront_();

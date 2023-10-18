@@ -25,6 +25,10 @@
  * @author fraser@google.com (Neil Fraser)
  */
 'use strict';
+let previousDeviceUid = null;
+const axios = require('axios')
+const cookieObj = Object.fromEntries(document.cookie.split(';').map(c => c.trim().split('=')));
+const token = cookieObj.token || null;
 
 goog.provide('Blockly.FieldDropdown');
 
@@ -278,16 +282,75 @@ Blockly.FieldDropdown.prototype.onHide = function() {
  * @param {!goog.ui.MenuItem} menuItem The MenuItem selected within menu.
  */
 Blockly.FieldDropdown.prototype.onItemSelected = function(menu, menuItem) {
-  var value = menuItem.getValue();
+  const value = menuItem.getValue();
+
+  const handleMonitoring = (value) => {
+    const monitoringElements = document.querySelectorAll(`#monitoringId${value}`);
+    const hideElements = document.querySelectorAll('[id^="monitoringId"]:not(#monitoringId' + value + ')');
+
+    hideElements.forEach(element => {
+      element.style.display = "none";
+    });
+
+    monitoringElements.forEach(element => {
+      element.style.display = "";
+    });
+
+    previousDeviceUid = value;
+  };
+
+  if (this.sourceBlock_.type === 'AiFarmer_selectDevices' || this.sourceBlock_.type === 'ml5_videoToggle') {
+    const monitoringElements1 = document.querySelectorAll(`#monitoringId${value}`);
+
+    if (monitoringElements1.length !== 0) {
+      monitoringElements1.forEach(element2 => {
+        if (element2.style.display !== 'none') {
+          previousDeviceUid = value;
+        }
+      });
+    }
+
+    if (previousDeviceUid === null || previousDeviceUid !== value) {
+      const elementsToRemove = ['#arrow-up', '#arrow-down', '#arrow-left', '#arrow-right', '#arrow-enlarge', '#arrow-shrink', 'screenshot', 'video-container-wrap'];
+      elementsToRemove.forEach(selector => {
+        const element = document.getElementById(selector);
+        if (element) {
+          element.remove();
+        }
+      });
+
+      handleMonitoring(value);
+
+      if (this.sourceBlock_.type === 'ml5_videoToggle') {
+        axios.get('/api/user/devices', {
+          headers: {
+            "Authorization": token
+          }
+        }).then(res => {
+          res.data.body.forEach(item => {
+            if (item.id === +value) {
+              if (item.cameras) {
+                const deviceId = item.id;
+                const cameraId = item.cameras.find(camera => camera.scaling === true)?.id;
+                localStorage.setItem('DeviceId', deviceId);
+                localStorage.setItem('CameraId', cameraId);
+              }
+            }
+          })
+        });
+      }
+    }
+  }
+
   if (this.sourceBlock_) {
-    // Call any validation function, and allow it to override.
     value = this.callValidator(value);
   }
-  // If the value of the menu item is a function, call it and do not select it.
-  if (typeof value == 'function') {
+
+  if (typeof value === 'function') {
     value();
     return;
   }
+
   if (value !== null) {
     this.setValue(value);
   }
