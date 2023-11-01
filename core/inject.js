@@ -132,7 +132,7 @@ Blockly.createDom_ = function(container, options) {
   // Instead use a gaussian blur, and then set all alpha to 1 with a transfer.
   var stackGlowFilter = Blockly.utils.createSvgElement('filter',
       {
-        'id': 'blocklyStackGlowFilter' + rnd,
+        // 'id': 'blocklyStackGlowFilter' + rnd,
         'height': '160%',
         'width': '180%',
         y: '-30%',

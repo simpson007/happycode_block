@@ -752,7 +752,8 @@ Blockly.Gesture.prototype.doBlockClick_ = function() {
     // If a field is being edited, don't fire any click events.
     var fieldEditing = Blockly.WidgetDiv.isVisible() || Blockly.DropDownDiv.isVisible();
     if (!fieldEditing) {
-      alert('请添加事件,然后点击运行按钮');
+      // alert('请添加事件,然后点击运行按钮');
+      alert('haha')
       // Blockly.Events.fire(
       //     new Blockly.Events.Ui(this.startBlock_, 'click', undefined, undefined));
       // // Happycode-specific: also fire a "stack click" event for this stack.

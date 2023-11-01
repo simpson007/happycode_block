@@ -30,8 +30,8 @@
 #
 # This script also generates:
 #   blocks_compressed.js: The compressed common blocks.
-#   blocks_horizontal_compressed.js: The compressed Happycode horizontal blocks.
-#   blocks_vertical_compressed.js: The compressed Happycode vertical blocks.
+#   blocks_horizontal_compressed.js: The compressed Scratch horizontal blocks.
+#   blocks_vertical_compressed.js: The compressed Scratch vertical blocks.
 #   msg/js/<LANG>.js for every language <LANG> defined in msg/js/<LANG>.json.
 
 import sys
@@ -51,7 +51,7 @@ CLOSURE_COMPILER = REMOTE_COMPILER
 CLOSURE_DIR_NPM = "node_modules"
 CLOSURE_ROOT_NPM = os.path.join("node_modules")
 CLOSURE_LIBRARY_NPM = "google-closure-library"
-CLOSURE_COMPILER_NPM = ("google-closure-compiler.cmd" if os.name == "nt" else "google-closure-compiler")
+CLOSURE_COMPILER_NPM = "google-closure-compiler"
 
 def import_path(fullpath):
   """Import a file with full path specification.
@@ -229,6 +229,11 @@ class Gen_compressed(threading.Thread):
     self.gen_blocks("horizontal")
     self.gen_blocks("vertical")
     self.gen_blocks("common")
+    self.gen_generator("javascript")
+    self.gen_generator("python")
+    self.gen_generator("php")
+    self.gen_generator("dart")
+    self.gen_generator("lua")
 
   def gen_core(self, vertical):
     if vertical:
@@ -272,10 +277,6 @@ class Gen_compressed(threading.Thread):
     elif block_type == "common":
       target_filename = "blocks_compressed.js"
       filenames = glob.glob(os.path.join("blocks_common", "*.js"))
-
-    # glob.glob ordering is platform-dependent and not necessary deterministic
-    filenames.sort()  # Deterministic build.
-
     # Define the parameters for the POST request.
     params = [
       ("compilation_level", "SIMPLE"),
@@ -287,7 +288,6 @@ class Gen_compressed(threading.Thread):
     # Add Blockly.Colours for use of centralized colour bank
     filenames.append(os.path.join("core", "colours.js"))
     filenames.append(os.path.join("core", "constants.js"))
-
     for filename in filenames:
       # Append filenames as false arguments the step before compiling will
       # either transform them into arguments for local or remote compilation
@@ -295,6 +295,30 @@ class Gen_compressed(threading.Thread):
 
     # Remove Blockly.Blocks to be compatible with Blockly.
     remove = "var Blockly={Blocks:{}};"
+    self.do_compile(params, target_filename, filenames, remove)
+
+  def gen_generator(self, language):
+    target_filename = language + "_compressed.js"
+    # Define the parameters for the POST request.
+    params = [
+      ("compilation_level", "SIMPLE"),
+    ]
+
+    # Read in all the source files.
+    # Add Blockly.Generator to be compatible with the compiler.
+    params.append(("js_file", os.path.join("build", "gen_generator.js")))
+    filenames = glob.glob(
+      os.path.join("generators", language, "*.js"))
+    filenames.sort()  # Deterministic build.
+    filenames.insert(0, os.path.join("generators", language + ".js"))
+    for filename in filenames:
+      # Append filenames as false arguments the step before compiling will
+      # either transform them into arguments for local or remote compilation
+      params.append(("js_file", filename))
+    filenames.insert(0, "[goog.provide]")
+
+    # Remove Blockly.Generator to be compatible with Blockly.
+    remove = "var Blockly={Generator:{}};"
     self.do_compile(params, target_filename, filenames, remove)
 
   def do_compile(self, params, target_filename, filenames, remove):
@@ -322,10 +346,10 @@ class Gen_compressed(threading.Thread):
         if pair[0][2:] not in filter_keys:
           dash_args.extend(pair)
 
-      # Build the final args array by prepending CLOSURE_COMPILER_NPM to
+      # Build the final args array by prepending google-closure-compiler to
       # dash_args and dropping any falsy members
       args = []
-      for group in [[CLOSURE_COMPILER_NPM], dash_args]:
+      for group in [["google-closure-compiler"], dash_args]:
         args.extend(filter(lambda item: item, group))
 
       proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
@@ -575,7 +599,7 @@ if __name__ == "__main__":
     (stdout, _) = test_proc.communicate()
     assert stdout == read(os.path.join("build", "test_expect.js"))
 
-    print("Using local compiler: %s ...\n" % CLOSURE_COMPILER_NPM)
+    print("Using local compiler: google-closure-compiler ...\n")
   except (ImportError, AssertionError):
     print("Using remote compiler: closure-compiler.appspot.com ...\n")
 
